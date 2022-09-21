@@ -102,5 +102,5 @@ class Grammar2(GrammarLR):
         super().__init__('table_lr_2.csv', 'grammar_2.csv')
 
 if __name__ == '__main__':
-    Grammar1().parse('x+y*x*y')
-    #Grammar2().parse('((a)a(aa))')
+    #Grammar1().parse('x+y*x*y')
+    Grammar2().parse('((a)a(aa))')

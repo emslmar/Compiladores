@@ -6,10 +6,10 @@ prog:	class *;
 // main (x, y, z) {}
 // donde los parámetros son IDs separados por coma, completa la regla params para reconocer esa sintaxis
 
-class:	ID '(' params ')' '´{' '}'
+class:	ID '(' params ')' '{' '}'
     ;
 
-params:
+params: (ID ',')* ID
     ;
 
 
@@ -19,6 +19,7 @@ STATIC: 'static';
 VOID: 'void';
 ID: Letter LetterOrDigit*;
 INTEGER     : [0-9]+ ;
+SPACE    : [ ]+ -> skip;
 
 // fragment es para crear segmentos de token que solamente serán usados en este archivo, pero que no
 // generan un token. Son como definiciones "locales" a este archivo.

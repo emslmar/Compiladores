@@ -1,6 +1,6 @@
 grammar Expr;		
 
-prog:	(expr NEWLINE)* ;
+prog:	(expr)* ;
 
 expr:	expr ('*'|'/') expr
     |	expr ('+'|'-') expr
@@ -8,7 +8,8 @@ expr:	expr ('*'|'/') expr
     |	'(' expr ')'
     ;
 
-NEWLINE : [\r\n]+ ;
+NEWLINE : [\r\n]+ -> skip;
+BLANK   : [ ]+ -> skip;
 INT     : [0-9]+ ;
 
 
