@@ -304,13 +304,13 @@ qualifiedName
     ;
 
 literal
-    : integerLiteral
-    | floatLiteral
-    | CHAR_LITERAL
-    | STRING_LITERAL
-    | BOOL_LITERAL
-    | NULL_LITERAL
-    | TEXT_BLOCK // Java17
+    : integerLiteral    #intL
+    | floatLiteral      #flL
+    | CHAR_LITERAL      #chL
+    | STRING_LITERAL    #strL
+    | BOOL_LITERAL      #bolL
+    | NULL_LITERAL      #nuL
+    | TEXT_BLOCK        #tBL// Java17
     ;
 
 integerLiteral
