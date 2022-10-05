@@ -21,4 +21,4 @@ def dummy():
 
 
 if __name__ == '__main__':
-    compile('resources/semantic/input/anattributenamedself.cool')
+    compile('../resources/semantic/input/inheritsbool.cool')

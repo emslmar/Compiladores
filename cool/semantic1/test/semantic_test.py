@@ -1,8 +1,8 @@
 import pytest
 
-from ..main import compile
-from ..main import PATH
-from ..util.exceptions import *
+from main import compile
+from main import PATH
+from util.exceptions import *
 
 RES_PATH = PATH + '../resources/semantic/input/%'
 

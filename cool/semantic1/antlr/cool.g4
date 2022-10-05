@@ -5,12 +5,12 @@ program
     ;
 
 klass
-    : KLASS TYPE ( 'inherits' TYPE )? '{' ( feature ';' )* '}'
+    : KLASS TYPE ( 'inherits' TYPE )? '{' ( feature ';' )* '}'                  #class
     ;
 
 feature
-    : ID '(' ( params+=formal (',' params+=formal)* )? ')' ':' TYPE '{' expr '}'
-    | ID ':' TYPE ( '<-' expr )?
+    : ID '(' ( params+=formal (',' params+=formal)* )? ')' ':' TYPE '{' expr '}' #method
+    | ID ':' TYPE ( '<-' expr )?                                                #attribute
     ;
 
 formal
