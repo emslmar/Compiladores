@@ -3,6 +3,7 @@ from antlr.coolListener import coolListener
 from antlr.coolParser import coolParser
 from util.structure import Klass, setBaseKlasses, Method, lookupClass, SymbolTableWithScopes
 
+from cool.semantic2.util.exceptions import InvalidDispatch, SelftypeBadReturn
 
 
 class SemanticListener(coolListener):
@@ -60,6 +61,8 @@ class SemanticListener(coolListener):
         #Declaro un atributo, pero el tipo lo guardo como Klass, no como string
         self.klass.addAttribute(ctx.ID().getText(), lookupClass(ctx.TYPE().getText()))
 
+        self.scopes[ctx.ID().getText()] = lookupClass(ctx.TYPE().getText())
+
     def enterLet(self, ctx:coolParser.LetContext):
         #Abro el scope de variables locales en el let
         self.scopes.openScope()
@@ -74,6 +77,8 @@ class SemanticListener(coolListener):
         #test_letself
         if ctx.ID().getText() == 'self':
             raise BadVariableName()
+
+        self.scopes[ctx.ID().getText()] = lookupClass(ctx.TYPE().getText())
 
     def exitProgram(self, ctx: coolParser.ProgramContext):
         #test_nomain
@@ -97,4 +102,21 @@ class SemanticListener(coolListener):
     # Base para el algoritmo bottom-up
     def enterInt(self, ctx:coolParser.IntContext):
         ctx.type = lookupClass('Int')
+
+    def enterCallobj(self, ctx: coolParser.CallobjContext):
+        caller = ctx.children[0].getText()
+        k = self.scopes[caller]
+        method_name = ctx.ID().getText()
+        try:
+            method = k.lookupMethod(method_name)  #animal
+        except KeyError:
+            raise InvalidDispatch(
+                f"{caller} object does not have method '{method_name}'"
+            )
+
+    def exitNew(self, ctx:coolParser.NewContext):
+        try:
+            ctx.type = lookupClass(ctx.TYPE().getText())
+        except KeyError:
+            raise SelftypeBadReturn
 

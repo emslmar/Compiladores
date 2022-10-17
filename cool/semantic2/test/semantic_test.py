@@ -4,6 +4,8 @@ from main import compile
 from main import PATH
 from util.exceptions import *
 
+from cool.semantic2.util.exceptions import MethodDoesNotExist, SelftypeBadReturn
+
 RES_PATH = '../../resources/semantic/input/{}'
 
 
@@ -74,9 +76,9 @@ def test_selftyperedeclared():
 #     with pytest.raises(BadOperands):
 #         c('badarith.cool')
 #
-# def test_baddispatch():
-#     with pytest.raises(MethodDoesNotExist):
-#         c('baddispatch.cool')
+def test_baddispatch():
+    with pytest.raises(MethodDoesNotExist):
+        c('baddispatch.cool')
 #
 # def test_badequalitytest():
 #     with pytest.raises(BadOperands):
@@ -114,6 +116,6 @@ def test_selftyperedeclared():
 #     with pytest.raises(BadClassName):
 #         c('returntypenoexist.cool')
 #
-# def test_selftypebadreturn():
-#     with pytest.raises(SelftypeBadReturn):
-#         c('selftypebadreturn.cool')
+def test_selftypebadreturn():
+    with pytest.raises(SelftypeBadReturn):
+        c('selftypebadreturn.cool')
