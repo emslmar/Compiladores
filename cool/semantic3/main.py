@@ -3,7 +3,9 @@ from antlr.coolLexer import coolLexer
 from antlr.coolParser import coolParser
 from os import getcwd
 
-from listeners.hierarchy import HierarchyListener, HierarchyNamesListener
+from cool.semantic3.listeners.basicSemanticCheck import basicSemanticListener
+from cool.semantic3.listeners.featuresBuilder import featuresBuilder
+from cool.semantic3.listeners.structureBuilder import structureBuilder
 from listeners.semantic import SemanticListener
 
 PATH=getcwd()
@@ -14,8 +16,12 @@ def compile(file):
 
     walker = ParseTreeWalker()
 
-    walker.walk(HierarchyNamesListener(), tree)
-    walker.walk(HierarchyListener(), tree)
+    walker.walk(basicSemanticListener(), tree)
+
+    walker.walk(structureBuilder(), tree)  # build the allClasses dict, sets inheritance
+
+    walker.walk(featuresBuilder(), tree)  # add feature methods and attributes
+
     walker.walk(SemanticListener(), tree)
 
 
@@ -24,4 +30,4 @@ def dummy():
 
 
 if __name__ == '__main__':
-    compile('../resources/semantic/input/dupformals.cool')
+    compile('../resources/semantic/input/trickyatdispatch2.cool')

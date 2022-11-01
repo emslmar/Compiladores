@@ -21,4 +21,4 @@ def dummy():
 
 
 if __name__ == '__main__':
-    compile('../resources/semantic/input/returntypenoexist.cool')
+    compile('../resources/semantic/input/outofscope.cool')

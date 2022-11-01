@@ -9,8 +9,8 @@ klass
     ;
 
 feature
-    : ID '(' ( params+=formal (',' params+=formal)* )? ')' ':' TYPE '{' expr '}'    #method
-    | ID ':' TYPE ( '<-' expr )?                                                    #attribute
+    : ID '(' ( params+=formal (',' params+=formal)* )? ')' ':' TYPE '{' expr '}' #method
+    | ID ':' TYPE ( '<-' expr )? #attribute
     ;
 
 formal
@@ -19,27 +19,27 @@ formal
 
 expr
     :
-    primary                                                             #pri
-    | ID '(' ( params+=expr ( ',' params+=expr)* )? ')'                 #call
-    | IF expr THEN expr ELSE expr FI                                    #if
-    | WHILE expr LOOP expr POOL                                         #while
-    | expr '.' ID '(' ( params+=expr  ( ',' params+=expr)* )? ')'       #callobj
-    | LET let_decl ( ',' let_decl )* IN expr                            #let
-    | CASE expr OF (case_stat)+ ESAC                                    #case
-    | NEW TYPE                                                          #new
-    | '{' ( expr ';' )+ '}'                                             #sequence
-    | expr ( '@' TYPE )? '.' ID '(' ( params+=expr  ( ',' params+=expr)* )? ')' #callstat
-    | '˜' expr          #neg
-    | ISVOID expr       #isvoid
-    | expr '*' expr     #mul
-    | expr '/' expr     #div
-    | expr '+' expr     #add
-    | expr '-' expr     #sub
-    | expr '<' expr     #less
-    | expr '<=' expr    #lesseq
-    | expr '=' expr     #eq
-    | 'not' expr        #not
-    | <assoc=right> ID '<-' expr        #assign
+    primary                                                         #pri
+    | ID '(' ( params+=expr ( ',' params+=expr)* )? ')'             #call
+    | IF expr THEN expr ELSE expr FI                                #if
+    | WHILE expr LOOP expr POOL                                     #while
+    | expr '.' ID '(' ( params+=expr  ( ',' params+=expr)* )? ')'   #callobj
+    | LET let_decl ( ',' let_decl )* IN expr                        #let
+    | CASE expr OF (case_stat)+ ESAC                                #case
+    | NEW TYPE                                                      #new
+    | '{' ( expr ';' )+ '}'                                         #sequence
+    | expr ( '@' TYPE )? '.' ID '(' ( params+=expr  ( ',' params+=expr)* )? ')'  #callstat
+    | '˜' expr       #neg
+    | ISVOID expr    #isvoid
+    | expr '*' expr  #mul
+    | expr '/' expr  #div
+    | expr '+' expr  #add
+    | expr '-' expr  #sub
+    | expr '<' expr  #less
+    | expr '<=' expr #lesseq
+    | expr '=' expr  #eq
+    | 'not' expr     #not
+    | <assoc=right> ID '<-' expr  #assign
     ;
 
 case_stat:
@@ -51,12 +51,12 @@ let_decl:
     ;
 
 primary:
-    '(' expr ')'    #parens
-    | ID            #var
-    | INTEGER       #int
-    | STRING        #str
-    | TRUE          #bool
-    | FALSE         #bool
+    '(' expr ')'
+    | ID
+    | INTEGER
+    | STRING
+    | TRUE
+    | FALSE
     ;
 
 fragment A : [aA] ;
@@ -100,7 +100,7 @@ ELSE : E L S E;
 WHILE : W H I L E;
 CASE : C A S E;
 ESAC : E S A C;
-NEW : N E W; 
+NEW : N E W;
 OF : O F;
 NOT : N O T;
 TRUE : 't' R U E;
@@ -114,4 +114,3 @@ STRING  : '"' .*? '"' ;
 COMMENT : '(*' .*? '*)' -> skip ;
 LINE_COMENT : '--' ~[\r\n]* -> skip ;
 WS : [ \r\t\u000C\n]+ -> skip ;
-
