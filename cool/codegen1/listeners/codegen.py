@@ -1,7 +1,8 @@
 from antlr.coolListener import coolListener
 from antlr.coolParser import coolParser
 from util.asm import *
-from util.structure import allClasses
+from util.structure import allClasses, lookupClass
+from util.dummyasm import dummy_protObj
 
 """
 Los tipos quedarán así:
@@ -22,11 +23,12 @@ class Literales(coolListener):
         self.idx = self.idx + 1
 
     def enterStr(self, ctx:coolParser.StrContext):
-        self.result += cTplInt.substitute(idx=self.idx, tag=2, value=len(ctx.getText()))
+        strValue = ctx.getText()[1:-1]
+        # crear un int donde guardas el tamaño del string
+        self.result += cTplInt.substitute(idx=self.idx, tag=2, value=len(strValue))
         self.idx = self.idx + 1
-
-        self.result += cTplStr.substitute(idx=self.idx, tag=3, size=4+(len(ctx.getText())+1)%4,
-                                          sizeIdx=(self.idx-1), value=ctx.getText())
+        self.result += cTplStr.substitute(idx=self.idx, tag=3, size=4+(len(strValue)+1)%4,
+                                          sizeIdx=(self.idx-1), value=strValue)
         self.idx = self.idx + 1
 
 
@@ -46,41 +48,53 @@ class CodeGen():
         self.walker.walk(literales, self.tree)
 
         self.result = literales.result +\
-                      self.tablaNombres() +\
+                      self.tablaNombres(literales.idx) +\
                       self.tablaModelosConstructores() +\
                       self.tablaMetodos() +\
                       self.objetosModelos()
 
-    def tablaNombres(self):
+    def tablaNombres(self, idx):
         r = "class_nameTab:\n"
         for k in allClasses().values():
-            self.result += cTplInt.substitute(idx=self.idx, tag=2, value=len(k.name))
-            self.idx = self.idx + 1
+            self.result += cTplInt.substitute(idx=idx, tag=2, value=len(k.name))
 
-            self.result += cTplStr.substitute(idx=self.idx, tag=3, size=4 + (len(k.name) + 1) % 4,
-                                              sizeIdx=(self.idx - 1), value=k.name)
-            r += "    .word str_const{}\n".format(self.idx)
-            self.idx = self.idx + 1
+            self.result += cTplStr.substitute(idx=idx, tag=3, size=4 + (len(k.name) + 1) % 4,
+                                              sizeIdx=(idx - 1), value=k.name)
+            r += "    .word str_const{}\n".format(idx)
+            idx = idx + 1
 
         return r
 
     def tablaModelosConstructores(self):
-        return ""
+        r = "class_objTab:\n"
+        for k in allClasses().values():
+            r += "    .word {}_protObj\n".format(k.name)
+            r += "    .word {}_init\n".format(k.name)
+        return r
 
     def tablaMetodos(self):
         r = ""
         for k in allClasses().values():
             r += k.name + "_dispTab:\n"
-            for k1 in k.methods:
-                r += "    .word {}.{}\n".format(k.name, k1)
-
+            super_class = k
+            while super_class.name != 'Object':
+                for k1 in super_class.methods:
+                    r += "    .word {}.{}\n".format(super_class.name, k1)
+                super_class = lookupClass(super_class.inherits)
         return r
 
-    def objetosModelos(self):
-        for k in allClasses():
-            pass
 
-        return ""
+    def objetosModelos(self):
+        r = dummy_protObj
+        idx = 5
+        for k in allClasses().values():
+            if k.name != "Main":
+                idx += 1
+            r += class_Tpl.substitute(name="{}_protObj".format(k.name), tag=idx, size= 3+len(k.attributes), name_dispTab="{}_dispTab".format(k.name))
+            r += "    .word 0\n" * len(k.attributes)
+
+
+        return r
 
     def segTexto(self):
         pass
